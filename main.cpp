@@ -10,7 +10,7 @@
 double G = 6.673 * pow(10, -11);
 const int NUMDIMENSIONS = 2;
 GLsizei winWidth = 400, winHeight = 300; // Initial display-window size.
-
+// ==================== Helper functions ====================
 std::string dtos(double v) {
   // return string representation of a double
   std::ostringstream strs;
@@ -31,7 +31,7 @@ double angle(double a[], double b[]) {
   // angle between to 2tuples of coordinates
   return atan2(b[1] - a[1], b[0] - a[0]);
 }
-
+// ==================== Classes ====================
 class Particle {
   // a class to represent a point mass that experiences gravity wrt other point
   // masses
@@ -78,7 +78,7 @@ public:
   void advance(double dt) {
     for (int i = 0; i < NUMDIMENSIONS; i++) {
       velocity[i] = velocity[i] + accel[i] * dt;
-      this->pos[i] += this->velocity[i] * dt;
+      pos[i] += velocity[i] * dt;
     }
   }
   std::string toString() {
@@ -103,6 +103,7 @@ public:
 };
 
 class ParticleField {
+  // A class to represent a field of interacting particles
 public:
   std::vector<Particle *> list;
 
@@ -113,7 +114,7 @@ public:
   void simulate(double dt) {
     for (int i = 0; i < list.size(); i++) {
       (*list[i]).resetPull();
-      for (int j = 0; i < list.size(); i++) {
+      for (int j = 0; j < list.size(); j++) {
         if (j != i) {
           (*list[i]).addPull((*list[j]));
         }
@@ -122,6 +123,8 @@ public:
     }
   }
 };
+
+// ==================== OpenGL stuff ====================
 void init(void) {
   glClearColor(0.0, 0.0, 1.0, 1.0); // Set display-window color to blue.
 
@@ -146,6 +149,7 @@ void winReshapeFcn(GLint newWidth, GLint newHeight) {
 void mouseHandler(GLint button, GLint action, GLint xMouse, GLint yMouse) {}
 
 int main(int argc, char **argv) {
+  std::cout << "---------- Tests ----------\n";
   double pos1[2] = {0, 0};
   double pos2[2] = {10, 10};
 
@@ -169,13 +173,16 @@ int main(int argc, char **argv) {
   }
   std::cout << "---------- Test ParticleField ----------\n";
   ParticleField pf = ParticleField();
-  p1.setxy(0, 0);
-  p2.setxy(10, 10);
+  p1 = Particle(pos1, pos1, 10000000000);
+  p2 = Particle(pos2, pos1, 10000000);
   pf.add(&p1);
   pf.add(&p2);
   std::cout << "readout\n";
+  // manually do what .simulate does
+  // (*pf.list[0]).addPull((*pf.list[1]));
+  // (*pf.list[0]).advance(0.1);
   for (int j = 0; j < pf.list.size(); j++) {
-    std::cout << "p" << j << "=" << pf.list[j]->toString() << "\n";
+    std::cout << "p" << j << "=" << (*pf.list[j]).toString() << "\n";
   }
   for (int i = 0; i < 10; i++) {
     pf.simulate(0.1);
