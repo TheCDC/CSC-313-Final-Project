@@ -88,14 +88,19 @@ public:
       pos[i] += velocity[i] * dt;
     }
     GLsizei limits[] = {winWidth, winHeight};
+    // bounce off walls
+    double decay = 0.5;
+    double factor = pow(decay,0.5);
     for (int s = 0; s < 2; s++) {
       if (pos[s] < 0) {
+        // stay in bounds
         pos[s] = 0;
-        velocity[s] *= -0.5;
+        // reduce kinetic energy
+        velocity[s] *= -factor;
       }
       if (pos[s] > limits[s]) {
         pos[s] = limits[s];
-        velocity[s] *= -0.5;
+        velocity[s] *= -factor;
       }
     }
   }
@@ -153,7 +158,7 @@ struct RGB {
     values[2] = bb;
   }
 };
-double MASSMAX = pow(10, 13);
+double MASSMAX = pow(10, 14);
 class Simulator2D {
 public:
   ParticleField sim = ParticleField();
@@ -168,7 +173,7 @@ public:
     for (int i = 0; i < N; i++) {
       // randomize initial conditions
       for (int j = 0; j < 2; j++) {
-        double r = 5;
+        double r = 100;
         int g = 100;
         vel[j] = r * (((double)(rand() % g) - g / 2.0) * 2.0 / g);
       }
