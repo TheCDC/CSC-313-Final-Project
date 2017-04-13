@@ -14,7 +14,7 @@ int WIDTH;
 int HEIGHT;
 double G = 6.673 * pow(10, -11);
 const int NUMDIMENSIONS = 2;
-GLsizei winWidth = 400, winHeight = 300; // Initial display-window size.
+GLsizei winWidth = 800, winHeight = 800; // Initial display-window size.
 // ==================== Helper functions ====================
 std::string dtos(double v) {
   // return string representation of a double
@@ -138,7 +138,7 @@ struct RGB {
     values[2] = bb;
   }
 };
-
+double MASSMAX = pow(10, 12);
 class Simulator2D {
 public:
   ParticleField sim = ParticleField();
@@ -159,7 +159,7 @@ public:
       }
       pos[0] = (double)(rand() % winWidth);
       pos[1] = (double)(rand() % winHeight);
-      double mass = (double)(rand() % 100) * pow(10, 12) / 100.0;
+      double mass = (double)(rand() % 100) * MASSMAX / 100.0;
       // construct particle with initial conditions
       pa = Particle(pos, vel, mass);
       (this->sim).add(pa);
@@ -177,13 +177,13 @@ public:
     glClear(GL_COLOR_BUFFER_BIT);
     for (int i = 0; i < this->sim.list.size(); i++) {
       Particle p = ((this->sim.list[i]));
-      std::cout << "draw " << i << " " << p.toString() << "\n";
+      // std::cout << "draw " << i << " " << p.toString() << "\n";
       int x, y;
       x = (int)p.pos[0];
       y = (int)p.pos[1];
       RGB c = this->colors[i];
       glColor3f(c.values[0], c.values[1], c.values[2]);
-      glPointSize(3);
+      glPointSize((int)(10*p.mass/MASSMAX));
       glBegin(GL_POINTS);
       glVertex2f(x, y);
       glEnd();
@@ -194,7 +194,7 @@ public:
 Simulator2D SIMULATION = Simulator2D(10);
 // ==================== OpenGL stuff ====================
 void init(void) {
-  glClearColor(0.0, 0.0, 1.0, 1.0); // Set display-window color to blue.
+  glClearColor(0.2, 0.2, 0.2, 1.0); // Set display-window color to blue.
 
   glMatrixMode(GL_PROJECTION);
   gluOrtho2D(0.0, 200.0, 0.0, 150.0);
