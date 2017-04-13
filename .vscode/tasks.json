@@ -4,6 +4,6 @@
     "version": "0.1.0",
     "command": "g++",
     "isShellCommand": true,
-    "args": ["-g", "main.cpp","-std=c++11","-pthread","-lGL","-lGLU","-lglut"],
+    "args": ["-g", "main.cpp","-std=c++14","-std=c++11","-pthread","-lGL","-lGLU","-lglut"],
     "showOutput": "always"
 }

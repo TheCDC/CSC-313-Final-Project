@@ -1,11 +1,15 @@
 #include <GL/glut.h>
+#include <functional>
 #include <iostream>
 #include <math.h>
+#include <random>
 #include <sstream>
 #include <stdio.h>
 #include <stdlib.h> //for malloc/free
 #include <string>
 #include <vector>
+int WIDTH;
+int HEIGHT;
 double G = 6.673 * pow(10, -11);
 const int NUMDIMENSIONS = 2;
 GLsizei winWidth = 400, winHeight = 300; // Initial display-window size.
@@ -104,25 +108,66 @@ public:
 class ParticleField {
   // A class to represent a field of interacting particles
 public:
-  std::vector<Particle *> list;
+  std::vector<Particle> list;
 
   ParticleField() {}
 
-  void add(Particle *p) { list.push_back(p); }
+  void add(Particle p) { list.push_back(p); }
 
   void simulate(double dt) {
     for (int i = 0; i < list.size(); i++) {
-      (*list[i]).resetPull();
+      (list[i]).resetPull();
       for (int j = 0; j < list.size(); j++) {
         if (j != i) {
-          (*list[i]).addPull((*list[j]));
+          (list[i]).addPull((list[j]));
         }
       }
-      (*list[i]).advance(dt);
+      (list[i]).advance(dt);
     }
   }
 };
 
+class Simulator2D {
+public:
+  ParticleField sim = ParticleField();
+  Simulator2D(int N) {
+
+    ParticleField sim;
+    double pos[] = {10, 10};
+    double vel[] = {0, 0};
+    Particle pa;
+    for (int i = 0; i < N; i++) {
+      for (int j = 0; j < 2; j++) {
+        vel[j] = ((double)(rand() % 10) - 5.0 / 5.0);
+        pos[j] = (double)(rand() % 200);
+      }
+
+      pa = Particle(pos, vel, 10000000000);
+      (this->sim).add(pa);
+    }
+  }
+  void advance(double dt) { this->sim.simulate(dt); }
+  void render() {
+    // OpenGL display stuff goes here
+    glClear(GL_COLOR_BUFFER_BIT);
+    for (int i = 0; i < this->sim.list.size(); i++) {
+      Particle p = ((this->sim.list[i]));
+      std::cout << "draw " << i << " " << p.toString() << "\n";
+      int x, y;
+      x = (int)p.pos[0];
+      y = (int)p.pos[1];
+      glColor3f(1, 1, 1);
+      glPointSize(1);
+      glBegin(GL_POINTS);
+      glVertex2f(x, y);
+      glEnd();
+    }
+    glFlush();
+    glutPostRedisplay();
+  };
+};
+
+Simulator2D SIMULATION = Simulator2D(10);
 // ==================== OpenGL stuff ====================
 void init(void) {
   glClearColor(0.0, 0.0, 1.0, 1.0); // Set display-window color to blue.
@@ -131,7 +176,10 @@ void init(void) {
   gluOrtho2D(0.0, 200.0, 0.0, 150.0);
 }
 
-void displayFcn(void) { glClear(GL_COLOR_BUFFER_BIT); }
+void displayFcn(void) {
+  SIMULATION.advance(0.5);
+  SIMULATION.render();
+}
 
 void winReshapeFcn(GLint newWidth, GLint newHeight) {
   /*  Reset viewport and projection parameters  */
@@ -174,24 +222,29 @@ int main(int argc, char **argv) {
   ParticleField pf = ParticleField();
   p1 = Particle(pos1, pos1, 10000000000);
   p2 = Particle(pos2, pos1, 10000000);
-  pf.add(&p1);
-  pf.add(&p2);
+  pf.add(p1);
+  pf.add(p2);
   for (int j = 0; j < pf.list.size(); j++) {
-    std::cout << "p" << j << "=" << (*pf.list[j]).toString() << "\n";
+    std::cout << "p" << j << "=" << (pf.list[j]).toString() << "\n";
   }
   for (int i = 0; i < 10; i++) {
     pf.simulate(0.1);
     for (int j = 0; j < pf.list.size(); j++) {
-      std::cout << "p" << j << "=" << pf.list[j]->toString() << "\n";
+      std::cout << "p" << j << "=" << pf.list[j].toString() << "\n";
     }
   }
+  std::cout << "---------- Test Simulator2D ----------\n";
 
+  Simulator2D testsim = Simulator2D(10);
+  for (int i = 0; i < testsim.sim.list.size(); i++) {
+    std::cout << "contains: " << (testsim.sim.list[i]).toString() << "\n";
+  }
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
   glutInitWindowPosition(100, 100);
   glutInitWindowSize(winWidth, winHeight);
   glutCreateWindow("Chris Chen CSC313 Final Project");
-
+  std::cout << "---------- Begin ----------\n";
   init();
   glutDisplayFunc(displayFcn);
   glutReshapeFunc(winReshapeFcn);
