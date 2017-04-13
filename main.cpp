@@ -7,7 +7,9 @@
 #include <stdio.h>
 #include <stdlib.h> //for malloc/free
 #include <string>
+#include <thread>
 #include <vector>
+
 int WIDTH;
 int HEIGHT;
 double G = 6.673 * pow(10, -11);
@@ -75,7 +77,7 @@ public:
   void resetPull() {
     for (int i = 0; i < NUMDIMENSIONS; i++) {
       this->accel[i] = 0;
-      this->velocity[i] = 0;
+      // this->velocity[i] = 0;
     }
   }
   void advance(double dt) {
@@ -116,34 +118,57 @@ public:
 
   void simulate(double dt) {
     for (int i = 0; i < list.size(); i++) {
-      (list[i]).resetPull();
+      list[i].resetPull();
       for (int j = 0; j < list.size(); j++) {
         if (j != i) {
-          (list[i]).addPull((list[j]));
+          list[i].addPull(list[j]);
         }
       }
       (list[i]).advance(dt);
     }
   }
 };
+struct RGB {
+  double values[3];
+  RGB() {}
+  RGB(double rr, double gg, double bb) {
+
+    values[0] = rr;
+    values[1] = gg;
+    values[2] = bb;
+  }
+};
 
 class Simulator2D {
 public:
   ParticleField sim = ParticleField();
+  std::vector<RGB> colors;
   Simulator2D(int N) {
+    srand(time(NULL));
 
     ParticleField sim;
     double pos[] = {10, 10};
     double vel[] = {0, 0};
     Particle pa;
     for (int i = 0; i < N; i++) {
+      // randomize initial conditions
       for (int j = 0; j < 2; j++) {
-        vel[j] = ((double)(rand() % 10) - 5.0 / 5.0);
-        pos[j] = (double)(rand() % 200);
+        double r = 1;
+        int g = 100;
+        vel[j] = r * (((double)(rand() % g) - g / 2.0) * 2.0 / g);
       }
-
-      pa = Particle(pos, vel, 10000000000);
+      pos[0] = (double)(rand() % winWidth);
+      pos[1] = (double)(rand() % winHeight);
+      double mass = (double)(rand() % 100) * pow(10, 12) / 100.0;
+      // construct particle with initial conditions
+      pa = Particle(pos, vel, mass);
       (this->sim).add(pa);
+      // associate a color
+      RGB c = RGB();
+      for (int ci = 0; ci < 3; ci++) {
+        c.values[ci] = (rand() % 16) / 16.0;
+      }
+      colors.push_back(c);
     }
   }
   void advance(double dt) { this->sim.simulate(dt); }
@@ -156,14 +181,13 @@ public:
       int x, y;
       x = (int)p.pos[0];
       y = (int)p.pos[1];
-      glColor3f(1, 1, 1);
-      glPointSize(1);
+      RGB c = this->colors[i];
+      glColor3f(c.values[0], c.values[1], c.values[2]);
+      glPointSize(3);
       glBegin(GL_POINTS);
       glVertex2f(x, y);
       glEnd();
     }
-    glFlush();
-    glutPostRedisplay();
   };
 };
 
@@ -177,8 +201,16 @@ void init(void) {
 }
 
 void displayFcn(void) {
-  SIMULATION.advance(0.5);
+  float timeStep = 0.1;
+  int g = 20;
+  for (int i = 0; i < g; i++) {
+
+    SIMULATION.advance(timeStep / g);
+  }
   SIMULATION.render();
+  std::this_thread::sleep_for(std::chrono::milliseconds(1000 / 60));
+  glFlush();
+  glutPostRedisplay();
 }
 
 void winReshapeFcn(GLint newWidth, GLint newHeight) {
