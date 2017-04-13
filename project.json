@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "nupengl.core": "*",
+    "glut":"glut"
+  }
+}

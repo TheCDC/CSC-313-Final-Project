@@ -1,0 +1,33 @@
+{
+    "files.associations": {
+        "*.tcc": "cpp",
+        "cmath": "cpp",
+        "complex": "cpp",
+        "cctype": "cpp",
+        "cfenv": "cpp",
+        "cinttypes": "cpp",
+        "clocale": "cpp",
+        "csetjmp": "cpp",
+        "csignal": "cpp",
+        "cstdarg": "cpp",
+        "cstddef": "cpp",
+        "cstdint": "cpp",
+        "cstdio": "cpp",
+        "cstdlib": "cpp",
+        "ctime": "cpp",
+        "cwchar": "cpp",
+        "cwctype": "cpp",
+        "exception": "cpp",
+        "initializer_list": "cpp",
+        "new": "cpp",
+        "type_traits": "cpp",
+        "typeinfo": "cpp",
+        "chrono": "cpp",
+        "iostream": "cpp",
+        "rope": "cpp",
+        "slist": "cpp",
+        "system_error": "cpp",
+        "thread": "cpp",
+        "scoped_allocator": "cpp"
+    }
+}
