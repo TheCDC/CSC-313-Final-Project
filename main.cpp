@@ -67,7 +67,7 @@ public:
   void addPull(Particle &other) {
     // add the acceleration due to gravity by other on this
     double dist = distance(this->pos, other.pos);
-    double F = (this->mass) * (other.mass) * G / dist;
+    double F = (this->mass) * (other.mass) * G / pow(dist, 2);
     double a = F / (this->mass);
     double theta = angle(this->pos, other.pos);
     this->accel[0] = a * cos(theta);
@@ -138,7 +138,7 @@ struct RGB {
     values[2] = bb;
   }
 };
-double MASSMAX = pow(10, 12);
+double MASSMAX = pow(10, 14);
 class Simulator2D {
 public:
   ParticleField sim = ParticleField();
@@ -153,13 +153,13 @@ public:
     for (int i = 0; i < N; i++) {
       // randomize initial conditions
       for (int j = 0; j < 2; j++) {
-        double r = 1;
+        double r = 3;
         int g = 100;
         vel[j] = r * (((double)(rand() % g) - g / 2.0) * 2.0 / g);
       }
       pos[0] = (double)(rand() % winWidth);
       pos[1] = (double)(rand() % winHeight);
-      double mass = (double)(rand() % 100) * MASSMAX / 100.0;
+      double mass = (rand() % 100) * MASSMAX / 100.0;
       // construct particle with initial conditions
       pa = Particle(pos, vel, mass);
       (this->sim).add(pa);
@@ -183,7 +183,7 @@ public:
       y = (int)p.pos[1];
       RGB c = this->colors[i];
       glColor3f(c.values[0], c.values[1], c.values[2]);
-      glPointSize((int)(10*p.mass/MASSMAX));
+      glPointSize((int)(20.0 * p.mass / MASSMAX));
       glBegin(GL_POINTS);
       glVertex2f(x, y);
       glEnd();
