@@ -41,7 +41,13 @@ public:
   double accel[NUMDIMENSIONS];
 
   double mass;
-
+  Particle() {
+    this->mass = 0;
+    for (int i = 0; i < NUMDIMENSIONS; i++) {
+      this->pos[i] = 0;
+      this->velocity[i] = 0;
+    }
+  }
   Particle(double pos[], double vel[], double mass) {
     this->mass = mass;
     for (int i = 0; i < NUMDIMENSIONS; i++) {
@@ -66,11 +72,12 @@ public:
   void resetPull() {
     for (int i = 0; i < NUMDIMENSIONS; i++) {
       this->accel[i] = 0;
+      this->velocity[i] = 0;
     }
   }
-  void simulate(double dt) {
+  void advance(double dt) {
     for (int i = 0; i < NUMDIMENSIONS; i++) {
-      velocity[i] += accel[i] * dt;
+      velocity[i] = velocity[i] + accel[i] * dt;
       this->pos[i] += this->velocity[i] * dt;
     }
   }
@@ -111,7 +118,7 @@ public:
           (*list[i]).addPull((*list[j]));
         }
       }
-      list[i]->simulate(dt);
+      (*list[i]).advance(dt);
     }
   }
 };
@@ -142,8 +149,8 @@ int main(int argc, char **argv) {
   double pos1[2] = {0, 0};
   double pos2[2] = {10, 10};
 
-  Particle p1 = Particle(pos1, pos1, 100000000000);
-  Particle p2 = Particle(pos2, pos1, 100000000);
+  Particle p1 = Particle(pos1, pos1, 1000000000);
+  Particle p2 = Particle(pos2, pos1, 1000000);
 
   std::cout << "p1=" << p1.toString() << "\n";
   std::cout << "p2=" << p2.toString() << "\n";
@@ -154,20 +161,18 @@ int main(int argc, char **argv) {
     p1.addPull(p2);
     p2.addPull(p1);
 
-    p1.simulate(0.1);
-    p2.simulate(0.1);
+    p1.advance(0.1);
+    p2.advance(0.1);
     std::cout << "p1=" << p1.toString() << "\n";
     std::cout << "p2=" << p2.toString() << "\n";
     std::cout << "dist=" << distance(p1.pos, p2.pos) << "\n";
   }
   std::cout << "---------- Test ParticleField ----------\n";
   ParticleField pf = ParticleField();
-  // p1.setxy(0, 0);
-  // p2.setxy(10, 10);
-  Particle *pp = &p1;
-  pf.add(pp);
-  pp = &p2;
-  pf.add(pp);
+  p1.setxy(0, 0);
+  p2.setxy(10, 10);
+  pf.add(&p1);
+  pf.add(&p2);
   std::cout << "readout\n";
   for (int j = 0; j < pf.list.size(); j++) {
     std::cout << "p" << j << "=" << pf.list[j]->toString() << "\n";
