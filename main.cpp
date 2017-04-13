@@ -51,6 +51,8 @@ public:
     for (int i = 0; i < NUMDIMENSIONS; i++) {
       this->pos[i] = 0;
       this->velocity[i] = 0;
+      this->accel[i] = 0;
+      
     }
   }
   Particle(double pos[], double vel[], double mass) {
@@ -58,6 +60,8 @@ public:
     for (int i = 0; i < NUMDIMENSIONS; i++) {
       this->pos[i] = pos[i];
       this->velocity[i] = vel[i];
+      this->accel[i] = 0;
+      
     }
   }
   void setxy(double x, double y) {
@@ -70,8 +74,8 @@ public:
     double F = (this->mass) * (other.mass) * G / pow(dist, 2);
     double a = F / (this->mass);
     double theta = angle(this->pos, other.pos);
-    this->accel[0] = a * cos(theta);
-    this->accel[1] = a * sin(theta);
+    this->accel[0] += a * cos(theta);
+    this->accel[1] += a * sin(theta);
   }
 
   void resetPull() {
@@ -124,6 +128,8 @@ public:
           list[i].addPull(list[j]);
         }
       }
+    }
+    for (int i = 0; i < list.size(); i++) {
       (list[i]).advance(dt);
     }
   }
@@ -138,7 +144,7 @@ struct RGB {
     values[2] = bb;
   }
 };
-double MASSMAX = pow(10, 14);
+double MASSMAX = pow(10, 13);
 class Simulator2D {
 public:
   ParticleField sim = ParticleField();
@@ -191,7 +197,7 @@ public:
   };
 };
 
-Simulator2D SIMULATION = Simulator2D(10);
+Simulator2D SIMULATION = Simulator2D(15);
 // ==================== OpenGL stuff ====================
 void init(void) {
   glClearColor(0.2, 0.2, 0.2, 1.0); // Set display-window color to blue.
