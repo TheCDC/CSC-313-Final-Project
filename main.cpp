@@ -1,4 +1,3 @@
-// note you need a bitmap file named data/EarthTexture.bmp to run this
 #include <GL/glut.h>
 #include <iostream>
 #include <math.h>
@@ -177,10 +176,6 @@ int main(int argc, char **argv) {
   p2 = Particle(pos2, pos1, 10000000);
   pf.add(&p1);
   pf.add(&p2);
-  std::cout << "readout\n";
-  // manually do what .simulate does
-  // (*pf.list[0]).addPull((*pf.list[1]));
-  // (*pf.list[0]).advance(0.1);
   for (int j = 0; j < pf.list.size(); j++) {
     std::cout << "p" << j << "=" << (*pf.list[j]).toString() << "\n";
   }
