@@ -52,7 +52,6 @@ public:
       this->pos[i] = 0;
       this->velocity[i] = 0;
       this->accel[i] = 0;
-      
     }
   }
   Particle(double pos[], double vel[], double mass) {
@@ -61,7 +60,6 @@ public:
       this->pos[i] = pos[i];
       this->velocity[i] = vel[i];
       this->accel[i] = 0;
-      
     }
   }
   void setxy(double x, double y) {
@@ -88,6 +86,17 @@ public:
     for (int i = 0; i < NUMDIMENSIONS; i++) {
       velocity[i] = velocity[i] + accel[i] * dt;
       pos[i] += velocity[i] * dt;
+    }
+    GLsizei limits[] = {winWidth, winHeight};
+    for (int s = 0; s < 2; s++) {
+      if (pos[s] < 0) {
+        pos[s] = 0;
+        velocity[s] *= -0.5;
+      }
+      if (pos[s] > limits[s]) {
+        pos[s] = limits[s];
+        velocity[s] *= -0.5;
+      }
     }
   }
   std::string toString() {
@@ -159,7 +168,7 @@ public:
     for (int i = 0; i < N; i++) {
       // randomize initial conditions
       for (int j = 0; j < 2; j++) {
-        double r = 3;
+        double r = 5;
         int g = 100;
         vel[j] = r * (((double)(rand() % g) - g / 2.0) * 2.0 / g);
       }
@@ -197,7 +206,7 @@ public:
   };
 };
 
-Simulator2D SIMULATION = Simulator2D(15);
+Simulator2D SIMULATION = Simulator2D(20);
 // ==================== OpenGL stuff ====================
 void init(void) {
   glClearColor(0.2, 0.2, 0.2, 1.0); // Set display-window color to blue.
@@ -208,7 +217,7 @@ void init(void) {
 
 void displayFcn(void) {
   float timeStep = 0.1;
-  int g = 20;
+  int g = 100;
   for (int i = 0; i < g; i++) {
 
     SIMULATION.advance(timeStep / g);
