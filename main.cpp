@@ -14,7 +14,7 @@ int WIDTH;
 int HEIGHT;
 double G = 6.673 * pow(10, -11);
 const int NUMDIMENSIONS = 2;
-GLsizei winWidth = 800, winHeight = 800; // Initial display-window size.
+GLsizei winWidth = 1280, winHeight = 720; // Initial display-window size.
 // ==================== Helper functions ====================
 std::string dtos(double v) {
   // return string representation of a double
@@ -90,7 +90,8 @@ public:
     GLsizei limits[] = {winWidth, winHeight};
     // bounce off walls
     double decay = 0.5;
-    double factor = pow(decay,0.5);
+    double factor = pow(decay, 0.5);
+    factor = 0.5;
     for (int s = 0; s < 2; s++) {
       if (pos[s] < 0) {
         // stay in bounds
@@ -110,17 +111,17 @@ public:
     for (int i = 0; i < NUMDIMENSIONS; i++) {
       out += dtos(this->pos[i]);
       if (i < NUMDIMENSIONS - 1) {
-        out += ",";
+        out += ", ";
       }
     }
     out += "}, {";
     for (int i = 0; i < NUMDIMENSIONS; i++) {
       out += dtos(this->velocity[i]);
       if (i < NUMDIMENSIONS - 1) {
-        out += ",";
+        out += ", ";
       }
     }
-    out += "}," + dtos(this->mass) + ")";
+    out += "}, " + dtos(this->mass) + ")";
     return out;
   }
 };
@@ -173,7 +174,7 @@ public:
     for (int i = 0; i < N; i++) {
       // randomize initial conditions
       for (int j = 0; j < 2; j++) {
-        double r = 100;
+        double r = 1000;
         int g = 100;
         vel[j] = r * (((double)(rand() % g) - g / 2.0) * 2.0 / g);
       }
@@ -203,9 +204,10 @@ public:
       y = (int)p.pos[1];
       RGB c = this->colors[i];
       glColor3f(c.values[0], c.values[1], c.values[2]);
-      glPointSize((int)(20.0 * p.mass / MASSMAX));
+      int radius = (int)(20.0 * p.mass / MASSMAX);
+      glPointSize(radius);
       glBegin(GL_POINTS);
-      glVertex2f(x, y);
+      glVertex2f(x - radius/2, y - radius/2);
       glEnd();
     }
   };
@@ -221,7 +223,7 @@ void init(void) {
 }
 
 void displayFcn(void) {
-  float timeStep = 0.1;
+  float timeStep = 1/60.0;
   int g = 100;
   for (int i = 0; i < g; i++) {
 
