@@ -33,4 +33,5 @@ Methods:
 - void advance(double dt)
 - void render()
 
+# Closing notes
 Edited using Visual Studio Code.
