@@ -34,4 +34,4 @@ Methods:
 - void render()
 
 # Closing notes
-Edited using Visual Studio Code.
+Edited using Visual Studio Code on Ubuntu GNU/Linux.

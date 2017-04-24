@@ -223,7 +223,7 @@ void init(void) {
 }
 
 void displayFcn(void) {
-  float timeStep = 1/60.0;
+  float timeStep = 1/10.0;
   int g = 100;
   for (int i = 0; i < g; i++) {
 
