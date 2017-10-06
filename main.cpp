@@ -14,7 +14,7 @@ int WIDTH;
 int HEIGHT;
 double G = 6.673 * pow(10, -11);
 const int NUMDIMENSIONS = 2;
-GLsizei winWidth = 1280, winHeight = 720; // Initial display-window size.
+GLsizei winWidth = 1920, winHeight = 1080; // Initial display-window size.
 // ==================== Helper functions ====================
 std::string dtos(double v) {
   // return string representation of a double
